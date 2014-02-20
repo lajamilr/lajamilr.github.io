@@ -258,7 +258,7 @@ var custom_bubble_chart = (function(d3, CustomTooltip) {
     d3.select(element).attr("stroke", "black");
     var content = "<span class=\"type\">Type:</span><span class=\"value\"> " + data.type + "</span><br/>";
     content +="<span class=\"type\">Direction:</span><span class=\"value\"> " + data.direction + "</span><br/>";
-    content +="<span class=\"type\">Duration:</span><span class=\"value\"> " + addCommas(data.value) + "</span><br/>";
+    content +="<span class=\"type\">Duration:</span><span class=\"value\"> " + addCommas(data.value) + " seconds</span><br/>";
     content +="<span class=\"type\">Date:</span><span class=\"value\"> " + data.date + "</span><br/>";
     content +="<span class=\"type\">Time:</span><span class=\"value\"> " + data.time + "</span>";
     tooltip.showTooltip(content, d3.event);
