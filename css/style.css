@@ -1,3 +1,24 @@
+#slider-range{width:480px;}
+#slider-range,#time{margin:10px;display:block;}
+
+path.link {
+    fill: none;
+    stroke: #666;
+    stroke-width: 1.5px;
+  }
+   
+circle {
+    fill: #ccc;
+    stroke: #fff;
+    stroke-width: 1.5px;
+  }
+   
+text {
+    fill: #000;
+    font: 10px sans-serif;
+    pointer-events: none;
+  } 
+
 h1{
    font-family: "Open Sans", sans-serif;
    font-weight: 700;
@@ -6,13 +27,17 @@ h1{
    letter-spacing: -1px;
 }
 
-.about{
-   font-family: "Open Sans", sans-serif;
-   font-weight: 700;
-   font-style: normal;
-   font-size: 30px;
-   letter-spacing: -1px;
-   line-height: 50px;
+p {
+  font-family:  serif;
+  font-size: 15px;
+  font-weight:bold;
+  color: firebrick;
+}
+
+p#info{
+  font-weight:normal;
+  font-style: italic;
+  color: gray;
 }
 
 body {
@@ -27,16 +52,6 @@ body {
   margin: 0;
 }
 
-/*#colorselect {
-  font-family: "Open Sans", sans-serif;
-  text-align: left;
-  font-size: 14px;
-  line-height: 1.4em;
-  padding: 0;
-  margin-left: 15%;
-  width: 700px;
-}*/
-
 #about {
   font-family: "Open Sans", sans-serif;
   text-align: left;
@@ -46,83 +61,36 @@ body {
   width: 800px;
 }
 
-/*form {
-   font-size: 14px;
-   font-weight:400;
-   font-style: normal;
+.about{
    font-family: "Open Sans", sans-serif;
+   font-weight: 700;
+   font-style: normal;
+   font-size: 30px;
+   letter-spacing: -1px;
+   line-height: 50px;
 }
-label{
-  letter-spacing: 0px;
-}
-b{
-  font-size: 18px;
-}*/
+
 .background {
   fill: none;
   pointer-events: all;
 }
-/*.rating {
-  font-size: 20px;
-  font-weight: bold;
-}
 
-.positive{
-    font-size: 20px;
-   font-weight: bold;
-   color: green;
-}
-.negative{
-    font-size: 20px;
-   font-weight: bold;
-   color: red;
-}
-
-#states {
-    stroke: #fff;
-    stroke-linejoin: round;
-  }
-#states .active {
-  fill-opacity: 1;
-}
-
-#mesh {
-    fill: none;
-    stroke: #fff;
-    stroke-width: .5px;
-    stroke-linejoin: round;
-    pointer-events: none;
-  }
-
-.state-label {
-    fill: #ccc;
-    fill-opacity: .9;
-    stroke: #000;
-    stroke-width: .4px;
-    font-size: 14px;
-    font-weight: 150;
-    text-anchor: middle;
-  }
-*/
 .legend {
   font-size: 14px;
 
 }
 
 #vis {
-  width: 1024px;
-  height: 800px;
+  width: 500px;
+  height: 500px;
   clear: both;
   margin-bottom: 10px;
+  border: 1px solid black;
+}
 }
 
 #view_selection {
   margin-top: 10px;
-}
-
-.months, .types, .direction {
-  font-size: 21px;
-  fill: #aaa;
 }
 
 .tooltip {
@@ -159,7 +127,7 @@ b{
 
 /* From Bootstrap */
 
-.container{width:10px;margin-left:auto;margin-right:auto;*zoom:1;}.container:before,.container:after{display:table;content:"";}
+.container{width:500px;margin-left:auto;margin-right:auto;*zoom:1;}.container:before,.container:after{display:table;content:"";}
 .container:after{clear:both;}
 .container-fluid{padding-left:20px;padding-right:20px;*zoom:1;}.container-fluid:before,.container-fluid:after{display:table;content:"";}
 .container-fluid:after{clear:both;}
