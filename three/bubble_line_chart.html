@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Bubble Line Chart</title>
+         <!-- Stylesheets -->
+         <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+         <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/themes/dot-luv/jquery-ui.css" />
+         
+         <link href="css/mdp.css" rel="stylesheet" type="text/css" />
+         <link href="css/style.css" rel="stylesheet" type="text/css" />
+         <br>
+         <h1>Day by Day Visualization of Mobile Phone Records</h1>
+    </head>
+    <body>
+        <p>Please select a date: 
+            <input type="text" id="multiDatesPicker">
+            <input type="submit" id="Submit" value = "Clear" class="ui-button ui-state-default ui-corner-all"/> 
+        </p> 
+        <p>Click on a date again to deselect it. Click on 'Clear' to clear the chart.</p>
+        <p id = "info" align="center">Size of bubble is proportional to duration.  Color indicates type of data. Hover for more details.<br><br>
+
+        <input type="checkbox" checked = "checked" class="css-checkbox" value="Voice" id="checkbox_1" name="Type" onChange = sortTypes() />
+        <label for="checkbox_1" name="checkbox_lbl_1" class="css-label">Voice</label>
+
+        <input type="checkbox" checked = "checked" class="css-checkbox" value="Data" id="checkbox_2" name="Type" onChange = sortTypes() />
+        <label for="checkbox_2" name="checkbox_lbl_2" class="css-label">Data</label>
+
+        <input type="checkbox" checked = "checked" class="css-checkbox" value="SMS" id="checkbox_3" name="Type" onChange = sortTypes() />
+        <label for="checkbox_3" name="checkbox_lbl_3" class="css-label">SMS</label>  
+        
+        <div id="chartContainer">
+        <script src="http://d3js.org/d3.v3.min.js"></script>
+        <script src="http://dimplejs.org/dist/dimple.v1.1.5.min.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script> 
+        <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js" type="text/javascript"></script>
+        <script src="jquery-ui.multidatespicker.js"></script>
+        <script type="text/javascript">
+
+    ////////// Multiple Date Picker /////////////
+        $( "#multiDatesPicker" ).multiDatesPicker(
+        { 
+            numberOfMonths: 3,
+            //showButtonPanel: true,
+            minDate: new Date(2010, 9 - 1, 16),
+            maxDate: new Date(2011, 2 - 1, 6),
+            dateFormat: "dd-M-y",
+            addDates: ["13-Oct-10"],
+            clickInput:true,
+            closeOnSelect:true,
+  
+            onSelect: function(dateText, inst) 
+            {      
+                var dates = $('#multiDatesPicker').multiDatesPicker('getDates');
+                var types = getTypes();
+                update(dates, types);
+            } 
+        });
+
+        dates = $('#multiDatesPicker').multiDatesPicker('getDates');
+        types = getTypes();
+        update(dates, types);
+          
+        $("#Submit").on('click', function()
+        {
+            $('#multiDatesPicker').multiDatesPicker('resetDates');
+            dates = $('#multiDatesPicker').multiDatesPicker('getDates');
+            $( "#multiDatesPicker" ).val("");
+            update(dates);
+        });
+
+        function update(dates, types)
+        {
+            d3.select("svg").remove();
+            d3.json("data.json", function(data)
+            {
+
+            data = dimple.filterData(data, "Date",  dates);
+            data = dimple.filterData(data, "Type",  types);
+
+            // Create the chart as usual
+            var svg = dimple.newSvg("#chartContainer", 690, 400);
+            var myChart = new dimple.chart(svg, data);
+            myChart.setBounds(90, 40, 490, 320);
+
+            myChart.assignColor("Voice", "#4E897F");
+            myChart.assignColor("SMS", "#488AC7");
+            myChart.assignColor("Data", "#FF8040");
+        
+            var x = myChart.addTimeAxis("x", "Time","%H:%M", "%H:%M");
+            var y = myChart.addCategoryAxis("y", "Date");
+        
+            // Size the bubbles by Duration
+            var z = myChart.addMeasureAxis("z", "Duration");
+        
+            // Control bubble sizes by setting the max and min values    
+            z.overrideMin = -50;
+            z.overrideMax = maxDuration();
+        
+            // Add the bubble series f
+            myChart.addSeries("Type", dimple.plot.bubble);
+        
+            // Show a legend
+            myChart.addLegend(180, 10, 360, 20, "right");
+            //myChart.addLegend(430, 20, 100, 300, "right");
+        
+            // Draw everything
+            myChart.draw();
+        
+            function maxDuration()
+            {
+                var maximum = 0;
+                data.forEach(function (d) 
+                {
+                    if(d.Duration > maximum)
+                        maximum = d.Duration;
+                });
+                return maximum; 
+            }
+        
+            });}
+ 
+
+        function sortTypes()
+        {
+            dates = $('#multiDatesPicker').multiDatesPicker('getDates');
+            types = getTypes();
+            update(dates, types);
+        }
+
+        function getTypes()
+        {
+            var types = [];
+            if(document.getElementById("checkbox_1").checked)
+                types.push(document.getElementById("checkbox_1").value);
+           if(document.getElementById("checkbox_2").checked)
+                types.push(document.getElementById("checkbox_2").value);
+            if(document.getElementById("checkbox_3").checked)
+                types.push(document.getElementById("checkbox_3").value);
+
+            return types;
+        }
+
+    </script>
+    </div>
+        <div id="about">
+            <span class="about">About</span><br>
+            Data from  <a href="http://crawdad.cs.dartmouth.edu/ctu/personal/" target="_blank">Crawdad</a>.
+            Designed and built with <a href="http://d3js.org/" target="_blank">D3.js</a> 
+            and <a href="http://dimplejs.org/" target="_blank"> dimplejs.</a>. Calander view provided by  
+            <a href="http://multidatespickr.sourceforge.net/" target="_blank">Multiple Date Picker. </a>
+            This Visualization is created by Layla R. Lajami
+            under the supervision of Dr. Yu Wang at the University of North Carolina at Charlotte.
+            <br><br><br><br>
+        </div> <!-- end of #about -->
+    </body>
+</html>
