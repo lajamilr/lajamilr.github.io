@@ -1,5 +1,5 @@
-#slider-range{width:480px;}
-#slider-range,#time{margin:10px;display:block;}
+#slider-range, #slider{width:480px;}
+#slider-range,#slider,#time{margin:10px;display:block;}
 
 path.link {
     fill: none;

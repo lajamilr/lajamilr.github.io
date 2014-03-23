@@ -11,9 +11,15 @@
 
 <body> 
   <div id="container" class="container">
-    <p>Please select a date: <input type="text" id="datepicker"></p>
+    <p>Please select a date: <input type="text" id="datepicker">
+                             <button id="up" >++</button>
+                             <button id="down" >- -</button>
+    </p>
+    <div id="slider"> </div>
+    <span id="date"></span>
     <p>Please select a time range and then click Submit</p>
-    <div id="slider-range"></div>
+    <div id="slider-range"> </div>
+    
     <span id="time"></span>
     <input type="submit" id="Submit" class="ui-button ui-state-default ui-corner-all"/> 
     <p id = "info" align="center">Click on a node to enlarge it. Double click on a node 
@@ -23,6 +29,7 @@
     <script src="vendor/d3.v3.js"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script> 
     <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js" type="text/javascript"></script>
+  
     <script defer src="js/script.js"></script>
     <script src="js/CustomTooltip.js"></script>
     <script src="js/NetworkGraph.js"></script>   
@@ -34,21 +41,36 @@
           hour_minute_1 = 1215;
 
       tooltip.hideTooltip();
-      update(date, hour_minute_0, hour_minute_1, tooltip);
 
-      ////////// Date Picker /////////////
+
+      ////////// Date Picker /////////////         
       $( "#datepicker" ).datepicker({ 
                 numberOfMonths: 3,
                 showButtonPanel: true,
                 minDate: new Date(2008, 2 - 1, 15),
                 maxDate: new Date(2008, 4 - 1, 29),
+                
                 onSelect: function(dateText) 
                 {
                   date = dateText;
+                  dateSlider = $( "#datepicker" ).datepicker("getDate").getTime()/1000;
+                  $("#slider").slider("value", dateSlider),
+                  sliding();
                   slideTime();
-                  update(date, hour_minute_0, hour_minute_1, tooltip);
-                } })
-          .datepicker( "setDate", date );
+                } 
+              })
+                        .datepicker( "setDate", date );
+
+
+      /////////////// Date Slider /////////////////
+      $("#slider").slider({
+                    min: 1203076800,
+                    max: 1209470400,
+                    value: 1203465600,
+                    step: 24*60*60,
+                    slide: sliding
+                  });
+
 
 
   ////////// Time SLider /////////////
@@ -59,8 +81,21 @@
               max: 1439,
               values: [540, 735],
               slide: slideTime
-            });
-      function slideTime(event, ui){
+      });
+
+      // The sliding function for the date slider
+      function sliding(event, ui)
+      {
+        var value = $("#slider").slider("value"),
+            date = convertTimestamp(value);
+        $( "#datepicker" ).datepicker("setDate", date);
+        $("#date").text(date);
+        update(date, hour_minute_0, hour_minute_1, tooltip); 
+      }
+
+      // The sliding function for the time slider
+      function slideTime(event, ui)
+      {
         var val0 = $("#slider-range").slider("values", 0),
           val1 = $("#slider-range").slider("values", 1),
           minutes0 = parseInt(val0 % 60, 10),
@@ -83,7 +118,20 @@
         $("#time").text(startTime + ' - ' + endTime);
       }
 
-      function getTime(hours, minutes) {
+      function convertTimestamp(timestamp) 
+      {
+          var d = new Date(timestamp * 1000), // Convert to milliseconds
+              yyyy = d.getFullYear(),
+              mm = ('0' + (d.getMonth() + 1)).slice(-2),  // Months are zero based. Add leading 0.
+              dd = ('0' + d.getDate()).slice(-2),         // Add leading 0.        
+              date;
+       
+          date = mm + "/" + dd + "/" + yyyy; 
+          return date;
+      }
+
+      function getTime(hours, minutes) 
+      {
         var time = null;
         minutes = minutes + "";
         if (hours < 12) {
@@ -104,11 +152,47 @@
         return hours + ":" + minutes + " " + time;
       }
 
+      // clicking actions
       $("#Submit").on('click', function()
       {
         update(date, hour_minute_0, hour_minute_1, tooltip);
       });
+
+      $("#up").on('click',function()
+      {
+        currentDate = document.getElementById("datepicker").value;
+        if(currentDate != "04/29/2008")
+        {
+          date = $( "#datepicker" ).datepicker("getDate");
+          date.setDate(date.getDate() + 1)
+          $( "#datepicker" ).datepicker("setDate", date);
+          date = document.getElementById("datepicker").value;
+
+          dateSlider = $( "#datepicker" ).datepicker("getDate").getTime()/1000;
+          $("#slider").slider("value", dateSlider);
+          sliding();
+        }     
+      });
+
+      $("#down").on('click',function()
+      {
+        currentDate = document.getElementById("datepicker").value;
+        if(currentDate != "02/15/2008")
+        {
+          date = $( "#datepicker" ).datepicker("getDate");
+          date.setDate(date.getDate() - 1)
+          $( "#datepicker" ).datepicker("setDate", date);
+          date = document.getElementById("datepicker").value; 
+
+          dateSlider = $( "#datepicker" ).datepicker("getDate").getTime()/1000;
+          $("#slider").slider("value", dateSlider);
+          sliding();
+        }     
+      });
+
       slideTime();
+      sliding();
+
     </script>
     <div id="vis"></div><br>
   </div> <!-- end of #container -->

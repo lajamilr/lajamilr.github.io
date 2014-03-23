@@ -2,9 +2,11 @@ function update(date, hour_minute_0, hour_minute_1, tooltip)
 {
     d3.select("svg")
        .remove();
+    
     // get the data
     d3.csv("data/dsn.csv", function(error, links) 
     {
+        if(error){console.log(error);}
         var width = 500,
             height = 500,
             color = d3.scale.category20c();
@@ -12,19 +14,47 @@ function update(date, hour_minute_0, hour_minute_1, tooltip)
         var nodes = {};
         
         var filterd_links = links.filter(bound_data);
+        var length = filterd_links.length;
 
-        filterd_links.forEach(function(link) 
+        for (var j = 0; j < length; j++)
         {
-            link.source = nodes[link.source] || (nodes[link.source] = {name: link.source});
-            link.target = nodes[link.target] || (nodes[link.target] = {name: link.target});
-            link.value = +link.value;
-        });
+            filterd_links[j].source = nodes[filterd_links[j].source] || (nodes[filterd_links[j].source] = {name: filterd_links[j].source});
+            filterd_links[j].target = nodes[filterd_links[j].target] || (nodes[filterd_links[j].target] = {name: filterd_links[j].target});
+            filterd_links[j].starting_time = [];
+            filterd_links[j].starting_time.push(filterd_links[j].time_start);
+            filterd_links[j].durations = [];
+            filterd_links[j].durations.push(+filterd_links[j].value);
+            filterd_links[j].num_connections = 1;
+            filterd_links[j].total_duration = +filterd_links[j].value;
+
+             // link.value should hold the avg duration for all connections
+            filterd_links[j].value = +filterd_links[j].value;
        
+            for (var i = 0; i < j; i++)
+            {
+                if(filterd_links[j].source.name == filterd_links[i].source.name && 
+                   filterd_links[j].target.name == filterd_links[i].target.name)
+                {
+                    filterd_links[i].starting_time.push(filterd_links[j].time_start);
+                    filterd_links[i].durations.push(+filterd_links[j].value);
+                    filterd_links[i].num_connections++;
+                    filterd_links[i].total_duration +=  (+filterd_links[j].value);
+                    filterd_links[i].value = (filterd_links[i].total_duration/filterd_links[i].num_connections);
+
+                    filterd_links.splice(j,1);
+                    j--;
+                    length--;
+                    break;
+                }
+            } 
+        }
+
         var force = d3.layout.force()
             .nodes(d3.values(nodes))
             .links(filterd_links)
             .size([width, height])
             .linkDistance(90)
+           // .linkDistance(function(d){return d.value;})
             .gravity(0.06)
             .charge(-300)
             .friction(.5)
@@ -99,14 +129,6 @@ function update(date, hour_minute_0, hour_minute_1, tooltip)
             node
                 .attr("transform", function(d) { 
                     return "translate(" + d.x + "," + d.y + ")"; });
-
-            /*node.attr("cx", function(d) { return d.x = Math.max(r, Math.min(width- r, d.x)); })
-                .attr("cy", function(d) { return d.y = Math.max(r, Math.min(height - r, d.y)); });
-
-            path.attr("x1", function(d) { return d.source.x; })
-                .attr("y1", function(d) { return d.source.y; })
-                .attr("x2", function(d) { return d.target.x; })
-                .attr("y2", function(d) { return d.target.y; });*/
         }
          
         // action to take on mouse click
@@ -148,21 +170,31 @@ function update(date, hour_minute_0, hour_minute_1, tooltip)
             d3.select(element).style("stroke", "red")
                               .style("stroke-width", 2);
                     
-            var content = "<span class=\"type\">Source:</span><span class=\"value\"> " + d.source.name + "</span><br/>";
-            content +="<span class=\"type\">Target:</span><span class=\"value\"> " + d.target.name + "</span><br/>";
-            content +="<span class=\"type\">Duration:</span><span class=\"value\"> " + addCommas(d.value) + " seconds</span><br/>";
-            content +="<span class=\"type\">Date Start:</span><span class=\"value\"> " + d.date_start + "</span><br/>";
-            content +="<span class=\"type\">Time Start:</span><span class=\"value\"> " + d.time_start + "</span>";
+            var content = "<span class=\"type\"><b>Source:</b></span><span class=\"value\"> " + d.source.name + "</span><br/>";
+            content +="<span class=\"type\"><b>Target:</b></span><span class=\"value\"> " + d.target.name + "</span><br/>";
+            content +="<span class=\"type\"><b>Total Duration:</b></span><span class=\"value\"> " + addCommas(d.total_duration) + " seconds</span><br/>";
+            content +="<span class=\"type\"><b>Average Duration:</b></span><span class=\"value\"> " + addCommas(d.value.toFixed(2)) + " seconds</span><br/>";
+            content +="<span class=\"type\"><b>#Connections:</b></span><span class=\"value\"> " + d.num_connections + "</span><br/>";
+            content +="<span class=\"type\"><b>Date Start:</b></span><span class=\"value\"> " + d.date_start + "</span><br/>";
+            content += stringifyArray(d.starting_time);
             tooltip.showTooltip(content, d3.event);
         }
 
+        function hide_details(d, i, element) 
+        {
+            d3.select(element).style("stroke", "#666")
+                              .style("stroke-width", 1.5);
+            tooltip.hideTooltip();
+        }
 
-      function hide_details(d, i, element) 
-      {
-        d3.select(element).style("stroke", "#666")
-                          .style("stroke-width", 1.5);
-        tooltip.hideTooltip();
-      }
-     
-    });
+        function stringifyArray(array)
+        {
+            var content ="<span class=\"type\"><b>Time Start:</b></span><span class=\"value\"> " + array[0] + "</span>";
+            for(var i =1; i < array.length; i++)
+            {
+                content += "<span class=\"type\">, </span><span class=\"value\"> " + array[i] + "</span>";
+            }
+            return content;
+        }
+    });  
 }
