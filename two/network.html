@@ -15,7 +15,6 @@
                              <button id="up" >++</button>
                              <button id="down" >- -</button>
     </p>
-    <div id="slider"> </div>
     <span id="date"></span>
     <p>Please select a time range and then click Submit</p>
     <div id="slider-range"> </div>
@@ -36,12 +35,9 @@
     <script>
 
       var tooltip = CustomTooltip("gates_tooltip", 240),
-          date = "02/20/2008",
-          hour_minute_0 = 900,
-          hour_minute_1 = 1215;
-
-      tooltip.hideTooltip();
-
+          date = "02/15/2008",
+          hour_minute_0 = 0000,
+          hour_minute_1 = 1155;
 
       ////////// Date Picker /////////////         
       $( "#datepicker" ).datepicker({ 
@@ -55,45 +51,24 @@
                   date = dateText;
                   dateSlider = $( "#datepicker" ).datepicker("getDate").getTime()/1000;
                   $("#slider").slider("value", dateSlider),
-                  sliding();
                   slideTime();
+                  update(date, hour_minute_0, hour_minute_1, tooltip);
                 } 
               })
-                        .datepicker( "setDate", date );
+        .datepicker( "setDate", date );
 
 
-      /////////////// Date Slider /////////////////
-      $("#slider").slider({
-                    min: 1203076800,
-                    max: 1209470400,
-                    value: 1203465600,
-                    step: 24*60*60,
-                    slide: sliding
-                  });
-
-
-
-  ////////// Time SLider /////////////
-
+      ////////// Time SLider /////////////
       $("#slider-range").slider({
               range: true,
               min: 0,
               max: 1439,
-              values: [540, 735],
+              //values: [540, 735],
+              values: [0, 1439],
               slide: slideTime
       });
 
-      // The sliding function for the date slider
-      function sliding(event, ui)
-      {
-        var value = $("#slider").slider("value"),
-            date = convertTimestamp(value);
-        $( "#datepicker" ).datepicker("setDate", date);
-        $("#date").text(date);
-        update(date, hour_minute_0, hour_minute_1, tooltip); 
-      }
 
-      // The sliding function for the time slider
       function slideTime(event, ui)
       {
         var val0 = $("#slider-range").slider("values", 0),
@@ -116,18 +91,6 @@
         startTime = getTime(hours0, minutes0);
         endTime = getTime(hours1, minutes1);
         $("#time").text(startTime + ' - ' + endTime);
-      }
-
-      function convertTimestamp(timestamp) 
-      {
-          var d = new Date(timestamp * 1000), // Convert to milliseconds
-              yyyy = d.getFullYear(),
-              mm = ('0' + (d.getMonth() + 1)).slice(-2),  // Months are zero based. Add leading 0.
-              dd = ('0' + d.getDate()).slice(-2),         // Add leading 0.        
-              date;
-       
-          date = mm + "/" + dd + "/" + yyyy; 
-          return date;
       }
 
       function getTime(hours, minutes) 
@@ -167,10 +130,7 @@
           date.setDate(date.getDate() + 1)
           $( "#datepicker" ).datepicker("setDate", date);
           date = document.getElementById("datepicker").value;
-
-          dateSlider = $( "#datepicker" ).datepicker("getDate").getTime()/1000;
-          $("#slider").slider("value", dateSlider);
-          sliding();
+          update(date, hour_minute_0, hour_minute_1, tooltip);
         }     
       });
 
@@ -183,15 +143,12 @@
           date.setDate(date.getDate() - 1)
           $( "#datepicker" ).datepicker("setDate", date);
           date = document.getElementById("datepicker").value; 
-
-          dateSlider = $( "#datepicker" ).datepicker("getDate").getTime()/1000;
-          $("#slider").slider("value", dateSlider);
-          sliding();
+          update(date, hour_minute_0, hour_minute_1, tooltip);
         }     
       });
 
       slideTime();
-      sliding();
+      update(date, hour_minute_0, hour_minute_1, tooltip);
 
     </script>
     <div id="vis"></div><br>
