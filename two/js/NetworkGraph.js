@@ -1,4 +1,4 @@
-function update(date, hour_minute_0, hour_minute_1, tooltip)
+function update(date, hour_minute_0, hour_minute_1, tooltip, isCircularLayout)
 {
     d3.select("svg")
        .remove();
@@ -6,12 +6,15 @@ function update(date, hour_minute_0, hour_minute_1, tooltip)
     // get the data
     d3.csv("data/dsn.csv", function(error, links) 
     {
+        //var isCircularLayout = true;
+
         if(error){console.log(error);}
         var width = 500,
             height = 500,
             color = d3.scale.category20c();
 
-        var nodes = []; 
+        var nodes = [];
+        var dataNodes = []; 
         var filterd_links = links.filter(bound_data);
         var length = filterd_links.length;
 
@@ -48,6 +51,7 @@ function update(date, hour_minute_0, hour_minute_1, tooltip)
             } 
         }
 
+
         for(var i = 1; i < 26; i++)
         {
             if(typeof nodes[i] == 'undefined')
@@ -73,22 +77,6 @@ function update(date, hour_minute_0, hour_minute_1, tooltip)
             nodes[filterd_links[j].target.name].incoming_neighbors.push(filterd_links[j].source.name);
         }
 
-        // setting the locations of the nodes on the circumference of a circle of radius = 200
-        var radius = 200,
-            theta = 0,
-            new_theta = 0,
-            d_theta = 360.0/25.0;
-
-        for(var i = 1; i < nodes.length; i++)
-        {
-            new_theta = toRadians(theta);
-            theta += d_theta;
-            nodes[i].x  = radius * ( Math.cos(new_theta) + 1) + 50;
-            nodes[i].px = radius * ( Math.cos(new_theta) + 1) + 50;
-            nodes[i].y  = radius * (-Math.sin(new_theta) + 1) + 50;
-            nodes[i].py = radius * (-Math.sin(new_theta) + 1) + 50;
-            nodes[i].fixed = true;
-        }
 
         var scale = d3.scale.linear()
                       .domain(scaleBounds(filterd_links))
@@ -96,9 +84,39 @@ function update(date, hour_minute_0, hour_minute_1, tooltip)
 
         var nodeScale = d3.scale.linear()
                       .domain(scaleBounds2(nodes))
-                      .range([4,9]);
+                      .range([4,10]);
 
-         
+
+        if(isCircularLayout)
+        {
+            // setting the locations of the nodes on the circumference of a circle of radius = 200
+            var radius = 200,
+                theta = 0,
+                new_theta = 0,
+                d_theta = 360.0/25.0;
+
+            for(var i = 1; i < nodes.length; i++)
+            {
+                new_theta = toRadians(theta);
+                theta += d_theta;
+                nodes[i].x  = radius * ( Math.cos(new_theta) + 1) + 50;
+                nodes[i].px = radius * ( Math.cos(new_theta) + 1) + 50;
+                nodes[i].y  = radius * (-Math.sin(new_theta) + 1) + 50;
+                nodes[i].py = radius * (-Math.sin(new_theta) + 1) + 50;
+                nodes[i].fixed = true;
+            }
+        }
+        else // If the layout is not circular, then remvoe the nodes that don't have any links
+        {
+ 
+            for(var i =1; i < nodes.length; i++)
+            {
+                if(!(nodes[i].in_degree == 0 && nodes[i].out_degree == 0))
+                    dataNodes.push(nodes[i]) 
+            }
+            nodes = dataNodes;
+        }
+        
         var svg = d3.select("#vis").append("svg")
             .attr("width", width)
             .attr("height", height);
@@ -107,9 +125,9 @@ function update(date, hour_minute_0, hour_minute_1, tooltip)
             .nodes(d3.values(nodes))
             .links(filterd_links)
             .size([width, height])
-            //.linkDistance(function(d){return scale(d.value);})
-            .gravity(0)
-            .charge(-60)
+            .linkDistance(function(d){return scale(d.value);})
+            .gravity(0.06)
+            .charge(-300)
             .friction(.5)
             .on("tick", tick)
             .start();

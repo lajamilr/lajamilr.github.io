@@ -14,6 +14,8 @@
     <p>Please select a date: <input type="text" id="datepicker">
                              <button id="up" >++</button>
                              <button id="down" >- -</button>
+      <input type="checkbox" checked = "checked" class="css-checkbox" value="Circular Layout" id="checkbox_1" name="Type"/>
+      <label for="checkbox_1" name="checkbox_lbl_1" class="css-label">Circular Layout</label>
     </p>
     <div id="slider"> </div>
     <span id="date"></span>
@@ -21,7 +23,7 @@
     <div id="slider-range"> </div>
     
     <span id="time"></span>
-    <input type="submit" id="Submit" class="ui-button ui-state-default ui-corner-all"/> 
+    <input type="submit" id="Submit" value = "Submit" class="ui-button ui-state-default ui-corner-all"/> 
     <p id = "info" align="center">Click on a node to enlarge it. Double click on a node 
       to restore it to its origional size. Hover over a link for more details.<br>
 
@@ -38,7 +40,8 @@
       var tooltip = CustomTooltip("gates_tooltip", 240),
           date = "02/15/2008",
           hour_minute_0 = 0000,
-          hour_minute_1 = 1155;
+          hour_minute_1 = 1159,
+          isChecked = document.getElementById("checkbox_1").checked;
 
       tooltip.hideTooltip();
 
@@ -92,7 +95,8 @@
             date = convertTimestamp(value);
         $( "#datepicker" ).datepicker("setDate", date);
         $("#date").text(date);
-        update(date, hour_minute_0, hour_minute_1, tooltip); 
+        isChecked = document.getElementById("checkbox_1").checked;
+        update(date, hour_minute_0, hour_minute_1, tooltip, isChecked); 
       }
 
       // The sliding function for the time slider
@@ -112,8 +116,8 @@
         if(minutes1 < 10)
           minutes1 = "0" + minutes1;
 
-         hour_minute_0 = parseInt(hours0 + "" + minutes0),
-            hour_minute_1 = parseInt(hours1 + "" + minutes1);
+        hour_minute_0 = parseInt(hours0 + "" + minutes0),
+        hour_minute_1 = parseInt(hours1 + "" + minutes1);
 
         startTime = getTime(hours0, minutes0);
         endTime = getTime(hours1, minutes1);
@@ -157,7 +161,9 @@
       // clicking actions
       $("#Submit").on('click', function()
       {
-        update(date, hour_minute_0, hour_minute_1, tooltip);
+        isChecked = document.getElementById("checkbox_1").checked;
+        console.log(isChecked);
+        update(date, hour_minute_0, hour_minute_1, tooltip, isChecked);
       });
 
       $("#up").on('click',function()
@@ -190,6 +196,11 @@
           $("#slider").slider("value", dateSlider);
           sliding();
         }     
+      });
+
+      $("#checkbox_1").click(function()
+      {
+          update(date, hour_minute_0, hour_minute_1, tooltip, $(this).is(':checked'));          
       });
 
       slideTime();
