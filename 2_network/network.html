@@ -45,6 +45,9 @@
             date = "02/15/2008",
             hour_minute_0 = 0000,
             hour_minute_1 = 1159,
+            value0 = 0,
+            value1 = 1439,
+            hasChanged = false,
             isChecked = document.getElementById("checkbox_1").checked;
 
         tooltip.hideTooltip();
@@ -111,6 +114,17 @@
             hours0 = parseInt(val0 / 60 % 24, 10),
             minutes1 = parseInt(val1 % 60, 10),
             hours1 = parseInt(val1 / 60 % 24, 10);
+
+            if(val0 != value0)
+            {
+              val0 = value0;
+              hasChanged = true;
+            }
+            if(val1 != value1)
+            {
+              val1 = value1;
+              hasChanged = true;
+            }
             
 
           if(minutes0 < 10)
@@ -165,8 +179,12 @@
         // clicking actions
         $("#Submit").on('click', function()
         {
-          isChecked = document.getElementById("checkbox_1").checked;
-          update(date, hour_minute_0, hour_minute_1, tooltip, isChecked);
+          if(hasChanged)
+          {
+            hasChanged = false;
+            isChecked = document.getElementById("checkbox_1").checked;
+            update(date, hour_minute_0, hour_minute_1, tooltip, isChecked);
+          }
         });
 
         $("#up").on('click',function()
