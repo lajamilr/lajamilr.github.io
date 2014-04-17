@@ -129,7 +129,13 @@ function update(date, hour_minute_0, hour_minute_1, tooltip, isCircularLayout)
             .friction(.5)
             .on("tick", tick)
             .start();
-         
+        // appending a date lable in the upper left corner of the visualization 
+        svg.append("text")
+           .attr("x", 10)
+           .attr("y", 10)
+           .attr("dy", ".35em")
+           .text(date);
+
         // build the arrow.
         svg.append("svg:defs").selectAll("marker")
             .data(["end"])      // Different link/path types can be defined here

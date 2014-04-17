@@ -13,14 +13,43 @@
   </head>
   <body> 
     <div id="container" class="container">
+      
       <!-- This block layouts a text field for the calander, ++/- - buttons and a checkbox-->
       <p>Please select a date: <input type="text" id="datepicker">
-                               <button id="up" >++</button>
+                               <button id="up" >++</button >
                                <button id="down" >- -</button>
-                               <input type="checkbox" checked = "checked" class="css-checkbox" value="Circular Layout" id="checkbox_1" name="Type"/>
+                               <input type="checkbox" checked = "checked" class="css-checkbox" value="Circular Layout" id="checkbox_1" name="Type" size = "100"/>
                                <label for="checkbox_1" name="checkbox_lbl_1" class="css-label">Circular Layout</label>
       </p>
 
+
+      <!-- This block layouts the animation section -->
+      <table style="width:300px";>
+      <tr>
+        <td>
+          <table style="width:300px";>
+          <tr>
+            <td>Start date:</td>
+            <td><input type="text" id="datepicker1" ></td> 
+          </tr>
+          <tr>
+            <td>End Date:</td>
+            <td><input type="text" id="datepicker2"></td> 
+          </tr>
+          <tr>
+            <td>Duration (s):</td>
+            <td><input type="text" id = "duration" value = "1"></td> 
+          </tr>
+          </table>
+        </td>
+        <td>
+          <input type="Animate" id="Animate" value = "Animate" class="ui-button ui-state-default ui-corner-all" style= "width:100px"/>
+          <label> &nbsp </label>
+          <input type="Stop" id="Stop" value = "Stop" class="ui-button ui-state-default ui-corner-all" style=" width:100px"/>
+        </td> 
+      </tr>
+      </table>
+               
       <div id="date-slider"> </div> <!-- date slider -->
       <span id="date"></span>
 
@@ -48,6 +77,7 @@
             value0 = 0,
             value1 = 1439,
             hasChanged = false,
+            interval = 0,
             isChecked = document.getElementById("checkbox_1").checked;
 
         tooltip.hideTooltip();
@@ -71,6 +101,20 @@
                 })
                           .datepicker( "setDate", date );
 
+         ////////// Date Picker1,2 /////////////         
+        $( "#datepicker1" ).datepicker({ 
+                  numberOfMonths: 3,
+                  showButtonPanel: true,
+                  minDate: new Date(2008, 2 - 1, 15),
+                  maxDate: new Date(2008, 4 - 1, 29),                  
+                })
+         $( "#datepicker2" ).datepicker({ 
+                  numberOfMonths: 3,
+                  showButtonPanel: true,
+                  minDate: new Date(2008, 2 - 1, 15),
+                  maxDate: new Date(2008, 4 - 1, 29),                  
+                })
+
 
         /////////////// Date Slider /////////////////
         $("#date-slider").slider({
@@ -83,7 +127,6 @@
                     });
 
 
-
     ////////// Time SLider /////////////
         $("#time-slider").slider({
                 range: true,
@@ -93,6 +136,30 @@
                 values: [0, 1439],
                 slide: slideTime
         });
+
+        // animate function
+        function animateFXN(date1, date2, s)
+        {
+          var numDays = Math.ceil((date2 - date1)/(1000*24*60*60)) + 1,
+              i = 0;
+          $( "#datepicker" ).datepicker("setDate", date1);
+          date = $( "#datepicker" ).datepicker("getDate");  
+          
+          var interval = setInterval(function() 
+          { 
+                $( "#datepicker" ).datepicker("setDate", date);
+                dateSlider = $( "#datepicker" ).datepicker("getDate").getTime()/1000;
+                $("#date-slider").slider("value", dateSlider);
+                sliding();
+
+                date = $( "#datepicker" ).datepicker("getDate");
+                date.setDate(date.getDate() + 1);
+                i++; 
+                if(i >= numDays) 
+                  clearInterval(interval);
+          }, s * 2000);
+          return interval;
+        }
 
         // The sliding function for the date slider
         function sliding(event, ui)
@@ -177,6 +244,32 @@
         }
 
         // clicking actions
+        $("#Animate").on('click', function()
+        {
+          
+          var start_date = $( "#datepicker1" ).datepicker("getDate"),
+                end_date = $( "#datepicker2" ).datepicker("getDate"),
+                duration = +document.getElementById("duration").value; 
+
+          if(start_date != null && end_date != null)
+          {
+            if(end_date >= start_date && duration > 0)
+            {
+              interval = animateFXN(start_date, end_date, duration); 
+            }
+            else
+              alert("  **Pleae enter valid data**\n" + 
+                "Make sure that the end date is greater than or equal to start date AND " +
+                "the duration  is a positive integer.");
+          }     
+          
+        });
+
+        $("#Stop").on('click', function()
+        {
+          clearInterval(interval);
+        });
+
         $("#Submit").on('click', function()
         {
           if(hasChanged)
