@@ -1,0 +1,147 @@
+h1{
+   font-family: "Open Sans", sans-serif;
+   font-weight: 700;
+   font-style: normal;
+   font-size: 40px;
+   letter-spacing: -1px;
+}
+
+p {
+  font-family:  serif;
+  font-size: 15px;
+  font-weight:bold;
+  color: firebrick;
+}
+
+p#info{
+  font-weight:normal;
+  font-style: italic;
+  color: gray;
+}
+
+body {
+  font-family: "Open Sans", sans-serif;
+  text-align: center;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.4em;
+  letter-spacing: 0px;
+  padding: 0;
+  margin: 0;
+  background: white url('ui-bg_fine-grain_10_eceadf_60x60.png') repeat;
+}
+
+#about {
+  font-family: "Open Sans", sans-serif;
+  text-align: left;
+  line-height: 1.4em;
+  padding: 0;
+  margin-left: 15%;
+  width: 800px;
+}
+
+.about{
+   font-family: "Open Sans", sans-serif;
+   font-weight: 700;
+   font-style: normal;
+   font-size: 30px;
+   letter-spacing: -1px;
+   line-height: 50px;
+}
+
+#vis {
+  width: 500px;
+  height: 500px;
+  clear: both;
+  margin-bottom: 10px;
+  border: 1px solid black;
+  background: white url('ui-bg_fine-grain_10_f8f7f6_60x60.png') repeat;
+}
+
+.tooltip {
+  position: absolute;
+  top: 100px;
+  left: 100px;
+  -moz-border-radius:5px;
+  border-radius: 5px;
+  border: 2px solid #000;
+  background: #fff;
+  opacity: .9;
+  color: black;
+  padding: 10px;
+  width: 300px;
+  font-size: 14px;
+  z-index: 10;
+  text-align: left;
+}
+
+.tooltip .title {
+  font-size: 13px;
+}
+
+.tooltip .name {
+  font-weight:bold;
+}
+
+#time-slider, #date-slider{width:480px;}
+#time-slider,#date-slider,#time{margin:10px;display:block;}
+
+path.link {
+    fill: none;
+    stroke: #666;
+    stroke-width: 1.5px;
+}
+   
+circle {
+    fill: #ccc;
+    stroke: #fff;
+    stroke-width: 1.5px;
+}
+   
+text {
+    fill: #000;
+    font: 10px sans-serif;
+    pointer-events: none;  
+} 
+
+input[type=checkbox].css-checkbox {
+  position: absolute; 
+  overflow: hidden; 
+  clip: rect(0 0 0 0); 
+  height:1px; 
+  width:1px; 
+  margin:-1px; 
+  padding:0;
+  border:0;
+}
+
+input[type=checkbox].css-checkbox + label.css-label {
+  padding-left:20px;
+  height:15px; 
+  display:inline-block;
+  line-height:15px;
+  background-repeat:no-repeat;
+  background-position: 0 0;
+  font-size:15px;
+  vertical-align:middle;
+  cursor:pointer;
+}
+
+input[type=checkbox].css-checkbox:checked + label.css-label {
+  background-position: 0 -15px;
+}
+
+.css-label{
+  background-image:url(http://csscheckbox.com/checkboxes/dark-check-green.png);
+}
+
+/* From Bootstrap */
+
+.container{width:500px;margin-left:auto;margin-right:auto;*zoom:1;}.container:before,.container:after{display:table;content:"";}
+.container:after{clear:both;}
+.container-fluid{padding-left:20px;padding-right:20px;*zoom:1;}.container-fluid:before,.container-fluid:after{display:table;content:"";}
+.container-fluid:after{clear:both;}
+
+a{color:#0088cc;text-decoration:none;font-weight:bold;}
+a:hover{color:#005580;text-decoration:underline;}

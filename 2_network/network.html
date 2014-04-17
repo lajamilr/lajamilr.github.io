@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Network Graph</title>
+     
+    <!-- Stylesheets -->
+    <link href="css/style.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/themes/dot-luv/jquery-ui.css" />
+
+    <br>
+    <h1>Sensor Mote Encounter Records Network Graph</h1>
+  </head>
+  <body> 
+    <div id="container" class="container">
+      <!-- This block layouts a text field for the calander, ++/- - buttons and a checkbox-->
+      <p>Please select a date: <input type="text" id="datepicker">
+                               <button id="up" >++</button>
+                               <button id="down" >- -</button>
+                               <input type="checkbox" checked = "checked" class="css-checkbox" value="Circular Layout" id="checkbox_1" name="Type"/>
+                               <label for="checkbox_1" name="checkbox_lbl_1" class="css-label">Circular Layout</label>
+      </p>
+
+      <div id="date-slider"> </div> <!-- date slider -->
+      <span id="date"></span>
+
+      <p>Please select a time range and then click Submit</p>
+      <div id="time-slider"> </div> <!-- time slider -->
+      
+      <span id="time"></span>
+      <input type="submit" id="Submit" value = "Submit" class="ui-button ui-state-default ui-corner-all"/> 
+      <p id = "info" align="center">Click on a node to enlarge it. Double click on a node 
+        to restore it to its origional size. Hover over a link for more details.<br></p>
+
+      <script src="http://d3js.org/d3.v3.min.js" type="text/javascript"></script>
+      <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script> 
+      <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js" type="text/javascript"></script>
+    
+      <script defer src="js/script.js"></script>
+      <script src="js/CustomTooltip.js"></script>
+      <script src="js/NetworkGraph.js"></script>   
+      <script type="text/javascript">
+
+        var tooltip = CustomTooltip("gates_tooltip", 240),
+            date = "02/15/2008",
+            hour_minute_0 = 0000,
+            hour_minute_1 = 1159,
+            isChecked = document.getElementById("checkbox_1").checked;
+
+        tooltip.hideTooltip();
+
+
+        ////////// Date Picker /////////////         
+        $( "#datepicker" ).datepicker({ 
+                  numberOfMonths: 3,
+                  showButtonPanel: true,
+                  minDate: new Date(2008, 2 - 1, 15),
+                  maxDate: new Date(2008, 4 - 1, 29),
+                  
+                  onSelect: function(dateText) 
+                  {
+                    date = dateText;
+                    dateSlider = $( "#datepicker" ).datepicker("getDate").getTime()/1000;
+                    $("#date-slider").slider("value", dateSlider),
+                    sliding();
+                    slideTime();
+                  } 
+                })
+                          .datepicker( "setDate", date );
+
+
+        /////////////// Date Slider /////////////////
+        $("#date-slider").slider({
+                      min: 1203076800,
+                      max: 1209470400,
+                      //value: 1203465600,
+                      value: 1203076800,
+                      step: 24*60*60,
+                      slide: sliding
+                    });
+
+
+
+    ////////// Time SLider /////////////
+        $("#time-slider").slider({
+                range: true,
+                min: 0,
+                max: 1439,
+                //values: [540, 735],
+                values: [0, 1439],
+                slide: slideTime
+        });
+
+        // The sliding function for the date slider
+        function sliding(event, ui)
+        {
+          var value = $("#date-slider").slider("value"),
+              date = convertTimestamp(value);
+          $( "#datepicker" ).datepicker("setDate", date);
+          $("#date").text(date);
+          isChecked = document.getElementById("checkbox_1").checked;
+          update(date, hour_minute_0, hour_minute_1, tooltip, isChecked); 
+        }
+
+        // The sliding function for the time slider
+        function slideTime(event, ui)
+        {
+          var val0 = $("#time-slider").slider("values", 0),
+            val1 = $("#time-slider").slider("values", 1),
+            minutes0 = parseInt(val0 % 60, 10),
+            hours0 = parseInt(val0 / 60 % 24, 10),
+            minutes1 = parseInt(val1 % 60, 10),
+            hours1 = parseInt(val1 / 60 % 24, 10);
+            
+
+          if(minutes0 < 10)
+            minutes0 = "0" + minutes0;
+
+          if(minutes1 < 10)
+            minutes1 = "0" + minutes1;
+
+          hour_minute_0 = parseInt(hours0 + "" + minutes0),
+          hour_minute_1 = parseInt(hours1 + "" + minutes1);
+
+          startTime = getTime(hours0, minutes0);
+          endTime = getTime(hours1, minutes1);
+          $("#time").text(startTime + ' - ' + endTime);
+        }
+
+        // This function converts a unix timestamp to a regular date
+        function convertTimestamp(timestamp) 
+        {
+            var d = new Date(timestamp * 1000), // Convert to milliseconds
+                yyyy = d.getFullYear(),
+                mm = ('0' + (d.getMonth() + 1)).slice(-2),  // Months are zero based. Add leading 0.
+                dd = ('0' + d.getDate()).slice(-2),         // Add leading 0.        
+                date;
+         
+            date = mm + "/" + dd + "/" + yyyy; 
+            return date;
+        }
+
+        function getTime(hours, minutes) 
+        {
+          var time = null;
+          minutes = minutes + "";
+          if (hours < 12) {
+            time = "AM";
+          }
+          else {
+            time = "PM";
+          }
+          if (hours == 0) {
+            hours = 12;
+          }
+          if (hours > 12) {
+            hours = hours - 12;
+          }
+          if (minutes.length == 1) {
+            minutes = "0" + minutes;
+          }
+          return hours + ":" + minutes + " " + time;
+        }
+
+        // clicking actions
+        $("#Submit").on('click', function()
+        {
+          isChecked = document.getElementById("checkbox_1").checked;
+          update(date, hour_minute_0, hour_minute_1, tooltip, isChecked);
+        });
+
+        $("#up").on('click',function()
+        {
+          currentDate = document.getElementById("datepicker").value;
+          if(currentDate != "04/29/2008")
+          {
+            date = $( "#datepicker" ).datepicker("getDate");
+            date.setDate(date.getDate() + 1)
+            $( "#datepicker" ).datepicker("setDate", date);
+            date = document.getElementById("datepicker").value;
+
+            dateSlider = $( "#datepicker" ).datepicker("getDate").getTime()/1000;
+            $("#date-slider").slider("value", dateSlider);
+            sliding();
+          }     
+        });
+
+        $("#down").on('click',function()
+        {
+          currentDate = document.getElementById("datepicker").value;
+          if(currentDate != "02/15/2008")
+          {
+            date = $( "#datepicker" ).datepicker("getDate");
+            date.setDate(date.getDate() - 1)
+            $( "#datepicker" ).datepicker("setDate", date);
+            date = document.getElementById("datepicker").value; 
+
+            dateSlider = $( "#datepicker" ).datepicker("getDate").getTime()/1000;
+            $("#date-slider").slider("value", dateSlider);
+            sliding();
+          }     
+        });
+
+        $("#checkbox_1").click(function()
+        {
+            update(date, hour_minute_0, hour_minute_1, tooltip, $(this).is(':checked'));          
+        });
+
+        slideTime();
+        sliding();
+
+      </script>
+      <div id="vis"></div><br>
+    </div> <!-- end of #container -->
+
+    <div id="about">
+      <span class="about">About</span><br>
+      Data from  <a href="http://crawdad.cs.dartmouth.edu/st_andrews/sassy/" target="_blank">Crawdad</a>.
+      Designed and built with <a href="http://d3js.org/" target="_blank">D3.js</a>, using JQuery widgets 
+      <a href="http://api.jqueryui.com/datepicker/" target="_blank">Date Picker</a>, and 
+      <a href="http://api.jqueryui.com/slider/" target="_blank"> Slider.</a> Time Slider adapted from 
+      <a href="http://marcneuwirth.com/blog/2010/02/21/using-a-jquery-ui-slider-to-select-a-time-range/" target="_blank"> Marc Neuwirth.</a>
+      Force directed graph is modified from <a href="http://bl.ocks.org/d3noob/8043434" target="_blank"> d3noob’s blocks.</a>
+      This Visualization are created by Layla R. Lajami
+      under the supervision of Dr. Yu Wang and his PhD Student Chao Zhang at the University of North Carolina at Charlotte.
+      <br><br><br><br>
+    </div> <!-- end of #about -->
+  </body>
+</html>
