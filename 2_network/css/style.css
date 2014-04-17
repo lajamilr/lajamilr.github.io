@@ -6,7 +6,11 @@ h1{
    letter-spacing: -1px;
 }
 
-p {
+tr{
+  text-align: right;
+}
+
+p, td {
   font-family:  serif;
   font-size: 15px;
   font-weight:bold;
