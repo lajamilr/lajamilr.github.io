@@ -88,6 +88,7 @@ body {
   font-weight:bold;
 }
 
+#datepicker, #datepicker1, #datepicker2  {position: relative; z-index: 100000;}
 #time-slider, #date-slider{width:480px;}
 #time-slider,#date-slider,#time{margin:10px;display:block;}
 
