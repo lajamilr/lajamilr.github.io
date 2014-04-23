@@ -49,19 +49,27 @@ References
 ==========
 	1. Jim Vallandingham’s tutorial “Creating Animated Bubble Charts in D3”: 
 http://vallandingham.me/bubble_charts_in_d3.html
+
 	2. Nai Saevang “Unemployment Visualization”: 
 https://github.com/naisaevang/unemploymentVis
+
 	3. DimpleJS “Time Bubble Lines”: 
 http://dimplejs.org/advanced_examples_viewer.html?id=advanced_time_axis
+
 	4. D3noob’s blocks “Directional Force Layout Diagram with node colouring”: 
 http://bl.ocks.org/d3noob/8043434
+
 	5. Bootstrap: 
 http://getbootstrap.com/css/
+
 	6. Sourceforge.net Multi Dates Picker: 
 http://multidatespickr.sourceforge.net/
+
 	7. jQuery Datepicker Widget: 
 http://api.jqueryui.com/datepicker/
+
 	8. jQery Slider Widget: 
 http://api.jqueryui.com/slider/
+
 	9. Marc Neuwirth “Using a jQuery UI Slider to Select a Time Range”: 
 http://marcneuwirth.com/blog/2010/02/21/using-a-jquery-ui-slider-to-select-a-time-range/
