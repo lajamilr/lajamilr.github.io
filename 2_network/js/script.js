@@ -1,3 +1,8 @@
+/*
+	This function add commas to long numbers
+	source code from: Nai Saevang
+	https://github.com/naisaevang
+*/
 function addCommas(nStr)
 {
 	nStr += '';

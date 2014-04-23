@@ -1,3 +1,10 @@
+<!--
+    Title: bubble_chart.html
+    Programmer: Layla R. Lajami
+    Purpose: This file contains both html elements and JavaScript code for creating 
+             a coordinated bubble chart (bubble chart placed on x and y coordinates)
+    Date: Spring 2014
+-->
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -9,10 +16,18 @@
          <link href="css/style.css" rel="stylesheet" type="text/css" />
 
          <br>
+         <!-- Header Title -->
          <h1>Day by Day Visualization of</h1>
          <h1>Mobile Phone Records</h1>
 
-         <!-- Bootstrap navigation -->
+         <!-- Bootstrap navigation 
+         These are basically links to other html files (the 2 visualizations of bubble chart).
+         They are organized using 
+         ul: unordered list
+         li: list item
+         They are grouped in a div: division 
+         They are formatted using Bootstrap styling. The styles are copied into the style.css file
+         -->
          <div id="navigation">
           <ul class="nav nav-pills">
             <li><a href="../1_1_bubble/bubble.html">All Data</a></li>
@@ -23,12 +38,17 @@
 
     <body>
         <p>Please select a date: 
-            <input type="text" id="multiDatesPicker">
-            <input type="submit" id="Submit" value = "Clear" class="ui-button ui-state-default ui-corner-all"/> 
+            <input type="text" id="multiDatesPicker"> <!-- a text field for the multi-datepicker -->
+            <input type="submit" id="Submit" value = "Clear" class="ui-button ui-state-default ui-corner-all"/> <!-- Clear Button -->
         </p> 
+
         <p>Click on a date again to deselect it. Click on 'Clear' to clear the chart.</p>
         <p id = "info" align="center">Size of bubble is proportional to duration.  Color indicates type of data. Hover for more details.<br><br>
 
+        <!-- 
+        3 checkboxes and labels
+        When the checkbox's state change checked -> unchecked and vice versa, the sortTypes() function is invoked.
+        -->
         <input type="checkbox" checked = "checked" class="css-checkbox" value="Voice" id="checkbox_1" name="Type" onChange = sortTypes() />
         <label for="checkbox_1" name="checkbox_lbl_1" class="css-label">Voice</label>
 
@@ -39,6 +59,7 @@
         <label for="checkbox_3" name="checkbox_lbl_3" class="css-label">SMS</label>  
         
         <div id="chartContainer">
+        <!-- Links for the scripts/source code needed for the visualization -->
         <script src="http://d3js.org/d3.v3.min.js" type="text/javascript"></script>
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script> 
         <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js" type="text/javascript"></script>
@@ -46,18 +67,21 @@
         <script src="js/jquery-ui.multidatespicker.js" type="text/javascript"></script>
         <script type="text/javascript">
 
-    ////////// Multiple Date Picker /////////////
+        ////////// Multiple Date Picker /////////////
         $( "#multiDatesPicker" ).multiDatesPicker(
         { 
             numberOfMonths: 3,
-            //showButtonPanel: true,
             minDate: new Date(2010, 9 - 1, 16),
             maxDate: new Date(2011, 2 - 1, 6),
             dateFormat: "dd-M-y",
             addDates: ["13-Oct-10"],
             clickInput:true,
             closeOnSelect:true,
-  
+            
+            /*
+                Select function for the calender
+                When the user select a date the graph is updated
+            */ 
             onSelect: function(dateText, inst) 
             {      
                 var dates = $('#multiDatesPicker').multiDatesPicker('getDates');
@@ -66,10 +90,16 @@
             } 
         });
 
+        // getting the dates and types and updating the graph
         dates = $('#multiDatesPicker').multiDatesPicker('getDates');
         types = getTypes();
         update(dates, types);
-          
+        
+        /*
+            Clicking function for the Clear Button
+            When the button is clicked, the calender is cleared
+            and the graph is updated
+        */  
         $("#Submit").on('click', function()
         {
             $('#multiDatesPicker').multiDatesPicker('resetDates');
@@ -81,23 +111,32 @@
         function update(dates, types)
         {
             d3.select("svg").remove();
+
+            // If there are dates and types selected, do the following
             if(dates.length != 0 && types.length != 0)
             {
+                // read the data from .json file
                 d3.json("data/ficek_personal_communication.json", function(data)
                 {
-
+                    // filter the data by dates and types
                     data = dimple.filterData(data, "Date",  dates);
                     data = dimple.filterData(data, "Type",  types);
 
-                    // Create the chart as usual
+                    // Create the chart 
                     var svg = dimple.newSvg("#chartContainer", 690, 400);
                     var myChart = new dimple.chart(svg, data);
                     myChart.setBounds(90, 40, 490, 320);
 
+                    /*Assign colors to series
+                        Voice: green
+                        SMS: blue
+                        Data: orange
+                    */
                     myChart.assignColor("Voice", "#4E897F");
                     myChart.assignColor("SMS", "#488AC7");
                     myChart.assignColor("Data", "#FF8040");
-                
+                    
+                    // create x and y axis
                     var x = myChart.addTimeAxis("x", "Time","%H:%M", "%H:%M");
                     var y = myChart.addCategoryAxis("y", "Date");
                 
@@ -108,16 +147,18 @@
                     z.overrideMin = -50;
                     z.overrideMax = maxDuration();
                 
-                    // Add the bubble series f
+                    // Add the bubble series 
                     myChart.addSeries("Type", dimple.plot.bubble);
                 
                     // Show a legend
                     myChart.addLegend(180, 10, 360, 20, "right");
-                    //myChart.addLegend(430, 20, 100, 300, "right");
                 
                     // Draw everything
                     myChart.draw();
-                
+                    
+                    /*
+                        This function finds and return the maximum duration in the selected dataset
+                    */
                     function maxDuration()
                     {
                         var maximum = 0;
@@ -132,7 +173,10 @@
                 });
             }
         }
- 
+        
+        /*
+            This function update the graph  based on the dates and types selected by the user.
+        */
         function sortTypes()
         {
             dates = $('#multiDatesPicker').multiDatesPicker('getDates');
@@ -140,6 +184,10 @@
             update(dates, types);
         }
 
+        /*
+            This function checks the state of each checkbox and returns an array of strings 
+            representing the types "Voice", "SMS", "Data"
+        */
         function getTypes()
         {
             var types = [];
@@ -153,16 +201,23 @@
             return types;
         }
 
-    </script>
-    </div>
+        </script>
+        </div>
+        <!--  The About division 
+        Displays information about the project 
+        Has some links to other references
+        -->
         <div id="about">
             <span class="about">About</span><br>
             Data from  <a href="http://crawdad.cs.dartmouth.edu/ctu/personal/" target="_blank">Crawdad</a>.
             Designed and built with <a href="http://d3js.org/" target="_blank">D3.js</a> 
-            and <a href="http://dimplejs.org/" target="_blank"> dimplejs</a>. Calander view provided by  
-            <a href="http://multidatespickr.sourceforge.net/" target="_blank">Multiple Date Picker. </a>
+            and <a href="http://dimplejs.org/" target="_blank"> dimplejs</a>. Bubble chart is modified from 
+            <a href="http://dimplejs.org/advanced_examples_viewer.html?id=advanced_time_axis" target="_blank"> 
+            DimpleJS Time Bubble Lines</a>. Calander view provided by  
+            <a href="http://multidatespickr.sourceforge.net/" target="_blank">Multi Date Picker. </a>
             This Visualization is created by Layla R. Lajami
-            under the supervision of Dr. Yu Wang and his PhD Student Chao Zhang at the University of North Carolina at Charlotte.
+            under the supervision of Dr. Yu Wang and his PhD Student Chao Zhang at the University of North Carolina at Charlotte. 
+            You can download the source code from  <a href="https://github.com/lajamilr/lajamilr.github.io" target="_blank">github</a>.
             <br><br><br><br>
         </div> <!-- end of #about -->
     </body>

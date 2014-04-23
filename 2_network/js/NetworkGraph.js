@@ -1,3 +1,10 @@
+/*
+    Title: NetworkGraph.js
+    Programmer: Layla R. Lajami
+    Purpose: This file contains JavaScript source code for creating a network graph
+             Forced-directed graph is modifed from d3noob's blocks: http://bl.ocks.org/d3noob/8043434
+    Date: Spring 2014
+*/
 function update(date, hour_minute_0, hour_minute_1, tooltip, isCircularLayout)
 {
     d3.select("svg")
@@ -17,9 +24,12 @@ function update(date, hour_minute_0, hour_minute_1, tooltip, isCircularLayout)
         var length = filterd_links.length;
 
         for (var j = 0; j < length; j++)
-        {
+        {            
+            // Compute the distinct nodes from the links.
             filterd_links[j].source = nodes[filterd_links[j].source] || (nodes[filterd_links[j].source] = {name: filterd_links[j].source});
             filterd_links[j].target = nodes[filterd_links[j].target] || (nodes[filterd_links[j].target] = {name: filterd_links[j].target});
+            
+            // Adding more link attributes
             filterd_links[j].starting_time = [];
             filterd_links[j].starting_time.push(filterd_links[j].time_start);
             filterd_links[j].durations = [];
@@ -29,7 +39,9 @@ function update(date, hour_minute_0, hour_minute_1, tooltip, isCircularLayout)
 
              // link.value should hold the avg duration for all connections
             filterd_links[j].value = +filterd_links[j].value;
-       
+            
+            // Search through the links array to see if the last link shares the same source and target node
+            // In that case, combine the info of the links,  remove the link from the array, and stop searching
             for (var i = 0; i < j; i++)
             {
                 if(filterd_links[j].source.name == filterd_links[i].source.name && 
@@ -49,7 +61,8 @@ function update(date, hour_minute_0, hour_minute_1, tooltip, isCircularLayout)
             } 
         }
 
-
+        // Make sure that the nodes array contains all the 25 nodes
+        // set the nodes attributes
         for(var i = 1; i < 26; i++)
         {
             if(typeof nodes[i] == 'undefined')
@@ -65,6 +78,7 @@ function update(date, hour_minute_0, hour_minute_1, tooltip, isCircularLayout)
             nodes[i].sum_avg_duration = 0;
         }
         
+        // Traverse through the link array and update the corresponding nodes attributes
         for(var j = 0; j < filterd_links.length; j++)
         {
             nodes[filterd_links[j].source.name].out_degree++;
@@ -75,16 +89,22 @@ function update(date, hour_minute_0, hour_minute_1, tooltip, isCircularLayout)
             nodes[filterd_links[j].target.name].incoming_neighbors.push(filterd_links[j].source.name);
         }
 
-
+        // create a scale for the link length
         var scale = d3.scale.linear()
                       .domain(scaleBounds(filterd_links))
                       .range([50,100]);
 
+        // create a scale for the node size
         var nodeScale = d3.scale.linear()
                       .domain(scaleBounds2(nodes))
                       .range([4,10]);
 
-
+        /*
+            If the layout is circular, place the nodes on the circumference of a 200 radius circle
+            Use the basic trigonometry formulas: x = r cos(theta); y = r sin(theta)
+            However, since D3 uses the upper left corner as the origin (0,0), 
+            Some transformation and projections are used to center the circle in the visualization area
+        */
         if(isCircularLayout)
         {
             // setting the locations of the nodes on the circumference of a circle of radius = 200
@@ -104,7 +124,7 @@ function update(date, hour_minute_0, hour_minute_1, tooltip, isCircularLayout)
                 nodes[i].fixed = true;
             }
         }
-        else // If the layout is not circular, then remvoe the nodes that don't have any links
+        else // If the layout is not circular, then remove the nodes that don't have any links
         {
  
             for(var i =1; i < nodes.length; i++)
@@ -123,13 +143,14 @@ function update(date, hour_minute_0, hour_minute_1, tooltip, isCircularLayout)
             .nodes(d3.values(nodes))
             .links(filterd_links)
             .size([width, height])
-            .linkDistance(function(d){return scale(d.value);})
+            .linkDistance(function(d){return scale(d.value);})  // scale the link length by the average duration
             .gravity(0.06)
             .charge(-300)
             .friction(.5)
             .on("tick", tick)
             .start();
-        // appending a date lable in the upper left corner of the visualization 
+
+        // appending a date label in the upper left corner of the visualization 
         svg.append("text")
            .attr("x", 10)
            .attr("y", 10)
@@ -137,6 +158,7 @@ function update(date, hour_minute_0, hour_minute_1, tooltip, isCircularLayout)
            .text(date);
 
         // build the arrow.
+        // Source code provided by: http://bl.ocks.org/d3noob/8043434
         svg.append("svg:defs").selectAll("marker")
             .data(["end"])      // Different link/path types can be defined here
             .enter().append("svg:marker")    // This section adds in the arrows
@@ -170,7 +192,7 @@ function update(date, hour_minute_0, hour_minute_1, tooltip, isCircularLayout)
          
         // add the nodes
         node.append("circle")
-            .attr("r", function(d){return nodeScale(d.out_degree);})
+            .attr("r", function(d){return nodeScale(d.out_degree);}) // scale the node size by the out_degree value
             .style("fill", function(d) { return color(d.name); });
 
          
@@ -180,7 +202,9 @@ function update(date, hour_minute_0, hour_minute_1, tooltip, isCircularLayout)
             .attr("dy", ".35em")
             .text(function(d) { return d.name; });
          
-        // add the curvy lines
+        /* add the curvy lines
+           Source code provided by: http://bl.ocks.org/d3noob/8043434
+        */
         function tick() 
         {
             path.attr("d", function(d) 
@@ -201,7 +225,10 @@ function update(date, hour_minute_0, hour_minute_1, tooltip, isCircularLayout)
                     return "translate(" + d.x + "," + d.y + ")"; });
         }
          
-        // action to take on mouse click
+        /* action to take on mouse click
+           the size of the clicked node and its label is enlarged and 
+           and the node tooltip will appear
+        */
         function click(d,i) 
         {
             d3.select(this).select("text").transition()
@@ -216,7 +243,10 @@ function update(date, hour_minute_0, hour_minute_1, tooltip, isCircularLayout)
             show_details2(d, i, d3.select(this));
         }
          
-        // action to take on mouse double click
+        /* action to take on mouse double click
+           the size of the clicked node and its label is restored 
+           and the tooltip is hidden
+        */
         function dblclick(d,i) 
         {
             d3.select(this).select("circle").transition()
@@ -231,12 +261,16 @@ function update(date, hour_minute_0, hour_minute_1, tooltip, isCircularLayout)
             hide_details2(d, i, d3.select(this));
         }
 
+        // This function filters the data by the date and time
         function bound_data(d)
         {
             return d.date_start == date &&
                    d.hour_minute_start >= hour_minute_0 && d.hour_minute_start <= hour_minute_1;
         }
 
+        /* This function shows the Link info in the tooltip
+         It also changes the link width and color attributes
+        */
         function show_details(d, i, element) 
         {
             d3.select(element).style("stroke", "red")
@@ -253,6 +287,7 @@ function update(date, hour_minute_0, hour_minute_1, tooltip, isCircularLayout)
             tooltip.showTooltip(content, d3.event);
         }
 
+        // This function shows the Node info in the tooltip
         function show_details2(d, i, element) 
         {           
             var content = "<span class=\"type\"><b>Name:</b></span><span class=\"value\"> " + d.name + "</span><br/>";
@@ -267,11 +302,13 @@ function update(date, hour_minute_0, hour_minute_1, tooltip, isCircularLayout)
             tooltip.showTooltip(content, d3.event);
         }
 
+        // This function hide the tooltip
         function hide_details2(d, i, element) 
         {
             tooltip.hideTooltip();
         }
 
+        // This function hide the tooltip and reset the width and color of the link 
         function hide_details(d, i, element) 
         {
             d3.select(element).style("stroke", "#666")
@@ -279,6 +316,7 @@ function update(date, hour_minute_0, hour_minute_1, tooltip, isCircularLayout)
             tooltip.hideTooltip();
         }
 
+        // This function return the content of a String array formated using <span>
         function stringifyArray(array)
         {
             if(array.length > 0)
@@ -294,6 +332,7 @@ function update(date, hour_minute_0, hour_minute_1, tooltip, isCircularLayout)
                 return "";
         }
 
+        // This function return the minimum and maximum values of the average duration
         function scaleBounds(array)
         {
             if(array.length > 0)
@@ -312,6 +351,7 @@ function update(date, hour_minute_0, hour_minute_1, tooltip, isCircularLayout)
             else return [0,0];
         }
 
+        // This function return the minimum and maximum values of the out_degree
         function scaleBounds2(array)
         {
             if(array.length > 0)
@@ -331,6 +371,7 @@ function update(date, hour_minute_0, hour_minute_1, tooltip, isCircularLayout)
                 return [0,0]; 
         }
 
+        // This function converts an angle from degrees to radians
         function toRadians (angle) 
         {
             return angle * (Math.PI / 180.0);

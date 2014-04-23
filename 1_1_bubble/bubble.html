@@ -1,3 +1,10 @@
+<!--
+    Title: bubble.html
+    Programmer: Layla R. Lajami
+    Purpose: This file creates the layout of the page for the animated bubble chart. 
+             It does not contain any JavaScript code (it has links to other scripts). 
+    Date: Spring 2014
+-->
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -7,12 +14,19 @@
      <link href="css/style.css" rel="stylesheet" type="text/css" />
      <link href="css/bootstrap.css" rel="stylesheet" type="text/css" />
 
-    <br>
+    <br> 
+    <!-- Header Title -->
     <h1>Mobile Phone Records of Czech</h1>
     <h1>Ph.D Student Michal Ficek</h1>
 
-
-    <!-- Bootstrap navigation -->
+    <!-- Bootstrap navigation 
+         These are basically links to other html files (the 2 visualizations of bubble chart).
+         They are organized using 
+         ul: unordered list
+         li: list item
+         They are grouped in a div: division 
+         They are formatted using Bootstrap styling. The styles are copied into the style.css file
+         -->
      <div id="navigation">
       <ul class="nav nav-pills">
         <li class="active"><a href="bubble.html">All Data</a></li>
@@ -23,6 +37,7 @@
 
   <body> 
     <div id="container" class="container">
+      <!-- Links for the scripts/source code needed for the visualization -->
       <script src="http://d3js.org/d3.v3.min.js" type="text/javascript"></script>
       <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script> 
       <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js" type="text/javascript"></script>
@@ -32,6 +47,9 @@
       <script src="js/bubblechart.js"></script>
       <script src="js/bubble.js"></script>
 
+      <!-- 
+        group buttons for grouping the data by month/type/direction
+      -->
       <div id="view_selection" class="btn-group">
         <a href="#" id="all" class="btn active">All data</a>
         <a href="#" id="month" class="btn">Group by Month</a>
@@ -39,6 +57,11 @@
         <a href="#" id="direction" class="btn">Group by Direction</a>
       </div>
 
+      <!-- color legend 
+           Voice: Green
+           SMS: Blue
+           Data: Orange
+      -->
       <p align="left">Size of bubble is proportional to duration.  Color indicates type of data. Hover for more details.<br>
       <img src="img/green.png"></img> Voice&nbsp&nbsp
       <img src="img/blue.png"></img> SMS&nbsp&nbsp
@@ -46,17 +69,22 @@
 
       <div id="vis"></div><br>
       
-    </div> <!--! end of #container -->
+    </div> <!-- end of #container -->
 
+    <!--  The About division 
+    Displays information about the project 
+    Has some links to other references
+    -->
     <div id="about">
       <span class="about">About</span><br>
       Data from  <a href="http://crawdad.cs.dartmouth.edu/ctu/personal/" target="_blank">Crawdad</a>.
       Designed and built with <a href="http://d3js.org/" target="_blank">D3.js</a>.
       Animated Bubble Chart modified from <a href="https://github.com/naisaevang" target="_blank">Nai Saevang</a>.
       Navigation and buttons from <a href="http://getbootstrap.com/css/" target="_blank">Bootstrap.css</a>. This Visualization is created by Layla R. Lajami
-      under the supervision of Dr. Yu Wang and his PhD Student Chao Zhang at the University of North Carolina at Charlotte.
+      under the supervision of Dr. Yu Wang and his PhD Student Chao Zhang at the University of North Carolina at Charlotte. 
+      You can download the source code from  <a href="https://github.com/lajamilr/lajamilr.github.io" target="_blank">github</a>.
       <br><br><br><br>
-    </div> <!--! end of #about -->
+    </div> <!-- end of #about -->
 
   </body>
 </html>

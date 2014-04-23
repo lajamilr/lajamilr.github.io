@@ -1,3 +1,10 @@
+<!--
+    Title: network.html
+    Programmer: Layla R. Lajami
+    Purpose: This file contains both html elements and JavaScript code for creating 
+             a network graph. 
+    Date: Spring 2014
+-->
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -8,13 +15,13 @@
     <link href="css/style.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/themes/dot-luv/jquery-ui.css" />
 
-    <br>
+    <br> <!-- Header Titel --> 
     <h1>Sensor Mote Encounter Records Network Graph</h1>
   </head>
   <body> 
     <div id="container" class="container">
       
-      <!-- This block layouts a text field for the calander, ++/- - buttons and a checkbox-->
+      <!-- This block layouts a text field for the calendar, ++/- - buttons and a checkbox-->
       <p>Please select a date: <input type="text" id="datepicker">
                                <button id="up" >++</button >
                                <button id="down" >- -</button>
@@ -22,8 +29,14 @@
                                <label for="checkbox_1" name="checkbox_lbl_1" class="css-label">Circular Layout</label>
       </p>
 
-
-      <!-- This block layouts the animation section -->
+      <!-- This block layouts the animation section using table format
+      2 input fields for selecting the start date and end date using a datepicker
+      1 input text filed for the duration. The default value is 1 seconds. 
+      The user must enter a positive number could be a fraction like 0.5 
+      2 buttons: one to start the animation and the other to stop it. 
+      Instead of using the button element <button>, I used the input element and formatted it like a button
+      using the class attribute of ui-button ui-state-default ui-corner-all, from the style.css
+      -->
       <table style="width:300px";>
       <tr>
         <td>
@@ -51,16 +64,18 @@
       </table>
                
       <div id="date-slider"> </div> <!-- date slider -->
-      <span id="date"></span>
+      <span id="date"></span> <!-- to display the date under the slider -->
 
       <p>Please select a time range and then click Submit</p>
       <div id="time-slider"> </div> <!-- time slider -->
       
-      <span id="time"></span>
+      <span id="time"></span> <!-- to display the time under the slider -->
       <input type="submit" id="Submit" value = "Submit" class="ui-button ui-state-default ui-corner-all"/> 
+
       <p id = "info" align="center">Click on a node to enlarge it. Double click on a node 
         to restore it to its origional size. Hover over a link for more details.<br></p>
 
+      <!-- Links for the scripts/source code needed for the visualization -->
       <script src="http://d3js.org/d3.v3.min.js" type="text/javascript"></script>
       <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script> 
       <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js" type="text/javascript"></script>
@@ -68,8 +83,14 @@
       <script defer src="js/script.js"></script>
       <script src="js/CustomTooltip.js"></script>
       <script src="js/NetworkGraph.js"></script>   
-      <script type="text/javascript">
+      <script type="text/javascript"> //JavaScript Source code
 
+      /*
+        Creating global variables that will be updated with the visualization
+        tooltip is provided for the CustomToolTip.js class
+        hour_minute_0 with a value 0000 represents the time 12:00 am
+        hour_minute_1 with a value 1159 represents the time 11:59 pm
+      */
         var tooltip = CustomTooltip("gates_tooltip", 240),
             date = "02/15/2008",
             hour_minute_0 = 0000,
@@ -86,58 +107,84 @@
         ////////// Date Picker /////////////         
         $( "#datepicker" ).datepicker({ 
                   numberOfMonths: 3,
-                  showButtonPanel: true,
                   minDate: new Date(2008, 2 - 1, 15),
                   maxDate: new Date(2008, 4 - 1, 29),
                   
+                  /*
+                      when the user selects a date from the calendar, the date gets updated
+                      and the date slider needs to be updated as well. The sliding function 
+                      is called to update the date slider and the visualization
+                  */
                   onSelect: function(dateText) 
                   {
                     date = dateText;
                     dateSlider = $( "#datepicker" ).datepicker("getDate").getTime()/1000;
                     $("#date-slider").slider("value", dateSlider),
                     sliding();
-                    slideTime();
+                    //slideTime();
                   } 
                 })
                           .datepicker( "setDate", date );
 
-         ////////// Date Picker1,2 /////////////         
+         ////////// Date Picker 1,2 /////////////
+         // these allow the user to pick a starting and ending date for the animation         
         $( "#datepicker1" ).datepicker({ 
                   numberOfMonths: 3,
-                  showButtonPanel: true,
                   minDate: new Date(2008, 2 - 1, 15),
                   maxDate: new Date(2008, 4 - 1, 29),                  
                 })
          $( "#datepicker2" ).datepicker({ 
                   numberOfMonths: 3,
-                  showButtonPanel: true,
                   minDate: new Date(2008, 2 - 1, 15),
                   maxDate: new Date(2008, 4 - 1, 29),                  
                 })
 
-
         /////////////// Date Slider /////////////////
+        /*
+          The value of the date slider are UNIX time Stamp
+          UNIX uses seconds while JavaScript uses milliseconds
+          Thats why when the time is retrieved via a JavaScript function 
+          it gets divided by 1000 to convert it from milliseconds to seconds
+          Min: 1203076800: is Feb 15, 2008 at 12 pm GMT
+          Max: 1209470400: is Apr 29, 2008 at 12 pm GMT 
+          The time component does not really matter in this slider;
+          it is a date slider after all
+          The current value of the date slider is set to Feb 15, 2008
+          Step: 24*60*60 represents one day. So every move of the slider 
+          will move forward or backward one day.
+        */
         $("#date-slider").slider({
                       min: 1203076800,
                       max: 1209470400,
-                      //value: 1203465600,
                       value: 1203076800,
                       step: 24*60*60,
                       slide: sliding
                     });
 
-
-    ////////// Time SLider /////////////
+        ////////// Time SLider /////////////
+        /*
+          The value for the time slider represents the number of minutes
+          min: 0 is 12 AM 
+          max: 1439 is 23:59 pm 
+          1439 / 60 (integer division) = 23 
+          1439 % 60 = 59
+          The current value of the time slider is the entire range from 12 AM to 11:59 PM
+        */
         $("#time-slider").slider({
                 range: true,
                 min: 0,
                 max: 1439,
-                //values: [540, 735],
                 values: [0, 1439],
                 slide: slideTime
         });
 
-        // animate function
+        /* animate function
+           It gets the number of days between the starting and ending dates
+           It uses the setInterval function to traverse through the range of dates
+           and update the visualization. 
+           The value returned from the setInterval function is used to clear the interval 
+           and stop the animation.
+        */
         function animateFXN(date1, date2, s)
         {
           var numDays = Math.ceil((date2 - date1)/(1000*24*60*60)) + 1,
@@ -157,11 +204,12 @@
                 i++; 
                 if(i >= numDays) 
                   clearInterval(interval);
-          }, s * 2000);
+          }, s * 1000);
           return interval;
         }
 
         // The sliding function for the date slider
+        // it updates the visualization 
         function sliding(event, ui)
         {
           var value = $("#date-slider").slider("value"),
@@ -172,7 +220,12 @@
           update(date, hour_minute_0, hour_minute_1, tooltip, isChecked); 
         }
 
-        // The sliding function for the time slider
+        /* The sliding function for the time slider
+           It gets the staring and ending time from the time slider
+           and extract the hour and minute from each value
+           SlideTime does not update the visualization. 
+           The user needs to click on the Submit button to update the visualization
+        */
         function slideTime(event, ui)
         {
           var val0 = $("#time-slider").slider("values", 0),
@@ -182,6 +235,7 @@
             minutes1 = parseInt(val1 % 60, 10),
             hours1 = parseInt(val1 / 60 % 24, 10);
 
+            // checking if the time has changed
             if(val0 != value0)
             {
               val0 = value0;
@@ -192,7 +246,6 @@
               val1 = value1;
               hasChanged = true;
             }
-            
 
           if(minutes0 < 10)
             minutes0 = "0" + minutes0;
@@ -208,7 +261,7 @@
           $("#time").text(startTime + ' - ' + endTime);
         }
 
-        // This function converts a unix timestamp to a regular date
+        // This function converts a UNIX timestamp to a regular date
         function convertTimestamp(timestamp) 
         {
             var d = new Date(timestamp * 1000), // Convert to milliseconds
@@ -221,6 +274,7 @@
             return date;
         }
 
+        // This function return the time in the format hh:mm AM or PM
         function getTime(hours, minutes) 
         {
           var time = null;
@@ -243,7 +297,11 @@
           return hours + ":" + minutes + " " + time;
         }
 
-        // clicking actions
+        /////////////////////////// clicking actions ///////////////////////////
+        /*
+          When the Animate button is clicked, the animate function will be called
+          if the data is valid. Otherwise, an alert message will be displayed
+        */
         $("#Animate").on('click', function()
         {
           
@@ -265,11 +323,21 @@
           
         });
 
+        /* When the Stop button is clicked, the animation will be stopped 
+           by clearing out the interval. 
+           The value supplied to the clearInterval function is the value returned from
+           the setInterval function inside animateFXN
+        */
         $("#Stop").on('click', function()
         {
           clearInterval(interval);
         });
 
+        /*
+          The Submit button is used to update the visualization when the time is changed
+          the global variable hasChanged, keep track of the change in time and hence if it 
+          it true, then the submit button will update the visualization
+        */
         $("#Submit").on('click', function()
         {
           if(hasChanged)
@@ -280,6 +348,12 @@
           }
         });
 
+        /*
+          The Up button moves the date forward by one day and updates the visualization
+          as long as we are not at the end of the calendar. 
+          When the date is updated, the date slider needs to be updated
+          and the sliding function is called to update the date slider and the visualization
+        */
         $("#up").on('click',function()
         {
           currentDate = document.getElementById("datepicker").value;
@@ -296,6 +370,12 @@
           }     
         });
 
+        /*
+          The Down button moves the date backward by one day and updates the visualization
+          as long as we are not at the beginning of the calendar. 
+          When the date is updated, the date slider needs to be updated
+          and the sliding function is called to update the date slider and the visualization
+        */
         $("#down").on('click',function()
         {
           currentDate = document.getElementById("datepicker").value;
@@ -312,6 +392,11 @@
           }     
         });
 
+        /*
+          The Checkbox switches the layout of the visualization from circular layout
+          to forced-directed layout and vice versa. 
+          It simply call the update function that takes care of recreating the visualization
+        */
         $("#checkbox_1").click(function()
         {
             update(date, hour_minute_0, hour_minute_1, tooltip, $(this).is(':checked'));          
@@ -324,6 +409,10 @@
       <div id="vis"></div><br>
     </div> <!-- end of #container -->
 
+    <!--  The About division 
+    Displays information about the project 
+    Has some links to other references
+    -->
     <div id="about">
       <span class="about">About</span><br>
       Data from  <a href="http://crawdad.cs.dartmouth.edu/st_andrews/sassy/" target="_blank">Crawdad</a>.
@@ -332,8 +421,9 @@
       <a href="http://api.jqueryui.com/slider/" target="_blank"> Slider.</a> Time Slider adapted from 
       <a href="http://marcneuwirth.com/blog/2010/02/21/using-a-jquery-ui-slider-to-select-a-time-range/" target="_blank"> Marc Neuwirth.</a>
       Force directed graph is modified from <a href="http://bl.ocks.org/d3noob/8043434" target="_blank"> d3noob’s blocks.</a>
-      This Visualization are created by Layla R. Lajami
-      under the supervision of Dr. Yu Wang and his PhD Student Chao Zhang at the University of North Carolina at Charlotte.
+      This Visualization is created by Layla R. Lajami
+      under the supervision of Dr. Yu Wang and his PhD Student Chao Zhang at the University of North Carolina at Charlotte. 
+      You can download the source code from  <a href="https://github.com/lajamilr/lajamilr.github.io" target="_blank">github</a>.
       <br><br><br><br>
     </div> <!-- end of #about -->
   </body>

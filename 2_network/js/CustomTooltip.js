@@ -1,4 +1,10 @@
-function CustomTooltip(tooltipId, width){
+/*
+	This source code creates a custom tooltip
+	source code from: Nai Saevang
+	https://github.com/naisaevang
+*/
+function CustomTooltip(tooltipId, width)
+{
 	var tooltipId = tooltipId;
 	$("body").append("<div class='tooltip' id='"+tooltipId+"'></div>");
 	

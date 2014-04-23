@@ -1,3 +1,9 @@
+<!--
+    Title: index.html
+    Programmer: Layla R. Lajami
+    Purpose: This file creates the home page for the visualization
+    Date: Spring 2014
+-->
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -6,11 +12,19 @@
      <!-- Stylesheets -->
      <link href="css/style.css" rel="stylesheet" type="text/css" />
 
-    <br>
-    <h1>ITCS 4650: CS Senior Project</h1>
-    <h1>By: Layla R. Lajami</h1>
+     <br>
+     <!-- Header Title -->
+     <h1>ITCS 4650: CS Senior Project</h1>
+     <h2>Layla R. Lajami</h2>
+     <h3> Spring 2014 </h3>
 
-    <!-- Bootstrap navigation -->
+     <!-- Bootstrap navigation 
+     These are basically links to other html files. They are organized using 
+     ul: unordered list
+     li: list item
+     They are grouped in a div: division 
+     They are formatted using Bootstrap styling. The styles are copied into the style.css file
+     -->
     <div id="navigation">
       <ul class="nav nav-pills">
         <li><a href="1_1_bubble/bubble.html">ctu/personal</a></li>
@@ -20,13 +34,26 @@
   </head>
 
   <body> 
-    <br><br><br><br><br><br><br>
+    <br><br><br><br> <!--  print out some breaks to display white space -->
+
+    <!-- Link to the documentation file -->
+    <p> 
+      Download the documentation file <br><a href="Documentation.pdf" target="_blank">here</a>
+    </p>
+    <br><br><br><br>
+
+
+    <!--  The About division 
+    Displays information about the project 
+    Has some links to other references
+    -->
     <div id="about">
       <span class="about">About</span><br>
       Data from  <a href="http://crawdad.cs.dartmouth.edu/index.html" target="_blank">Crawdad</a>.
       Designed and built with <a href="http://d3js.org/" target="_blank">D3.js</a>.
       These Visualizations are created by Layla R. Lajami
-      under the supervision of Dr. Yu Wang and his PhD Student Chao Zhang at the University of North Carolina at Charlotte.
+      under the supervision of Dr. Yu Wang and his PhD Student Chao Zhang at the University of North Carolina at Charlotte. 
+      You can download the source code from  <a href="https://github.com/lajamilr/lajamilr.github.io" target="_blank">github</a>.
       <br><br><br><br>
     </div> <!-- end of #about -->
   </body>
