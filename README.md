@@ -9,7 +9,7 @@ Visualization large datasets using:
 	•	JavaScript
 	•	JQuery
 	•	D3
-	•	dimplejs
+	•	DimpleJS
 
 Datasets:
 ---------
@@ -43,7 +43,6 @@ This project is created by Layla R. Lajami under the supervision of Dr. Yu Wang 
 
 ✴ If you have any question, please contact me at http://layla-r-lajami.weebly.com/contact-me.html
 
-✴ Source code can be downloaded from: https://github.com/lajamilr/lajamilr.github.io 
 
 References
 ==========
